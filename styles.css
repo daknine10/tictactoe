@@ -32,3 +32,8 @@ body {
 .buttons > button {
     margin-bottom: 12px;
 }
+
+.change > * {
+    padding: 8px;
+    margin: 12px;
+}
