@@ -146,11 +146,13 @@ function ScreenController() {
         if (game.checkWinner(game.getBoard())) {
             dialog.textContent = `${activePlayer.name} is the winner!`
             dialog.showModal();
+            return
         }
 
         if (game.checkDraw(game.getBoard())) {
             dialog.textContent = `Draw!`
             dialog.showModal();
+            return
         }
     }
 
