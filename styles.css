@@ -1,0 +1,34 @@
+.container {
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    grid-auto-flow: row;
+    gap: 20px;
+    min-width: 800px;
+    margin-bottom: 12px;
+}
+
+.marker {
+    min-height: 200px;
+    border: 1px solid black;
+}
+
+.container > button{
+    border: 1px solid black;
+    font-size: 72px;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    overflow: visible;
+    background: transparent;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.buttons > button {
+    margin-bottom: 12px;
+}
