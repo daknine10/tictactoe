@@ -3,12 +3,14 @@ function Gameboard () {
     const columns = 3;
     let board = [];
 
-    for (let i = 0; i < rows; i++) {
-        board[i] = []
-        for (let j = 0; j < columns; j++) {
-            board[i].push(Marker());
+    const createBoard = () => {
+        for (let i = 0; i < rows; i++) {
+            board[i] = []
+            for (let j = 0; j < columns; j++) {
+                board[i].push(Marker());
+            }
         }
-    }
+}
 
     const getBoard = () => board;
 
@@ -16,7 +18,9 @@ function Gameboard () {
         board[row][column].addChoice(marker)
     }
 
-    return {getBoard, playerChoice};
+    createBoard()
+
+    return {getBoard, playerChoice, resetBoard: createBoard};
 }
 
 function Marker() {
@@ -88,7 +92,18 @@ function GameController() {
         return false
     };
 
-    return {playRound, getActivePlayer, getBoard: board.getBoard, checkWinner, getPlayers: () => [player1, player2]};
+    const checkDraw = (board) => {
+        let temporary = []
+        for (let row of board) {
+            row.map((x) => temporary.push(x.getValue()))
+        }
+        if (!(temporary.includes(0))) {
+            return true;
+        }
+        return false;
+    }
+
+    return {playRound, getActivePlayer, getBoard: board.getBoard, checkWinner, resetBoard: () => {board.resetBoard(); activePlayer = player1}, getPlayers: () => [player1, player2], checkDraw};
 };
 
 function ScreenController() {
@@ -132,11 +147,18 @@ function ScreenController() {
             dialog.textContent = `${activePlayer.name} is the winner!`
             dialog.showModal();
         }
+
+        if (game.checkDraw(game.getBoard())) {
+            dialog.textContent = `Draw!`
+            dialog.showModal();
+        }
     }
 
     dialog.addEventListener("click", (e) => {
         if (e.target !== e) {
-            location.reload()
+            dialog.close()
+            game.resetBoard()
+            updateScreen()
         }
     })
 
@@ -144,41 +166,43 @@ function ScreenController() {
 
     const changeName1 = document.createElement("input");
     changeName1.textContent = "Change name:";
-    changeName1.placeholder = "Player 1 name"
+    changeName1.placeholder = "Player 1 name";
     change.appendChild(changeName1);
 
     const changeName2 = document.createElement("input");
     changeName2.textContent = "Change name:";
-    changeName2.placeholder = "Player 2 name"
+    changeName2.placeholder = "Player 2 name";
     change.appendChild(changeName2);
 
     const changeButton = document.createElement("button");
-    changeButton.textContent = "Change"
+    changeButton.textContent = "Change";
     change.appendChild(changeButton);
     changeButton.addEventListener("click", () => {
-        players = game.getPlayers()
-        players[0].changeName(changeName1.value)
-        players[1].changeName(changeName2.value)
-        changeName1.value = ""
-        changeName2.value = ""
+        players = game.getPlayers();
+        players[0].changeName(changeName1.value);
+        players[1].changeName(changeName2.value);
+        changeName1.value = "";
+        changeName2.value = "";
+        updateScreen();
+    })
+
+    
+    const resetGame = document.querySelector(".reset")
+    resetGame.addEventListener("click", () => {
+        game.resetBoard()
+        updateScreen()
     })
 
     gameBoard.addEventListener("click", clickHandler);
 
     updateScreen()
-}
+};
 
 function start() {
     const startGame = document.querySelector(".start")
     startGame.addEventListener("click", () => {
         ScreenController()
-    })
-
-    const resetGame = document.querySelector(".reset")
-    resetGame.addEventListener("click", () => {
-        location.reload()
-    })
-
-}
+    }, {once: true})
+};
 
 start()
